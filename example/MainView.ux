@@ -10,6 +10,8 @@
         console.log('device:', Device.vendor + " " + Device.model);
         console.log('cores:',  Device.cores);
         console.log('retina:', Device.isRetina);
+        console.log('battery:', Device.battery);
+        console.log('battery status:', Device.batteryStatus);
 
         var asyncUUID = Observable("");
         setTimeout(function() {
@@ -31,7 +33,9 @@
             asyncUUID: asyncUUID,
             locale:    Device.locale,
             cores:     Device.cores,
-            isRetina:  Device.isRetina
+            isRetina:  Device.isRetina,
+            battery:  Device.battery,
+            batterystatus:  Device.batteryStatus,
         };
     </JavaScript>
 
@@ -58,18 +62,22 @@
     <DockPanel>
         <Image Layer="Background" File="Assets/background.jpg" StretchMode="UniformToFill"/>
 
-        <StackPanel Alignment="TopCenter" Margin="20,40,20,20">
-            <Text Color="#fff" Margin="20,0,20,0"  FontSize="20" Value="about"  Alignment="Center"/>
-            <Text Color="#cff" Margin="20,0,20,10"  FontSize="32" Value="DEVICE" Alignment="Center"/>
+        <ScrollView>
+            <StackPanel Alignment="TopCenter" Margin="20,40,20,20">
+                <Text Color="#fff" Margin="20,0,20,0"  FontSize="20" Value="about"  Alignment="Center"/>
+                <Text Color="#cff" Margin="20,0,20,10"  FontSize="32" Value="DEVICE" Alignment="Center"/>
 
-            <Rectangle Height="0.5" Color="#acc9" Margin="30,0,30,15"/>
+                <Rectangle Height="0.5" Color="#acc9" Margin="30,0,30,15"/>
 
-            <TextBlock Title="Name"   Content="{name}"/>
-            <TextBlock Title="UUID"   Content="{UUID}" ContentFontSize="13"/>
-            <TextBlock Title="Async UUID"   Content="{asyncUUID}" ContentFontSize="13"/>
-            <TextBlock Title="Locale" Content="{locale}"/>
-            <TextBlock Title="Cores"  Content="{cores}"/>
-            <TextBlock Title="Retina" Content="{isRetina}" Last="true"/>
-        </StackPanel>
+                <TextBlock Title="Name"   Content="{name}"/>
+                <TextBlock Title="UUID"   Content="{UUID}" ContentFontSize="13"/>
+                <TextBlock Title="Async UUID"   Content="{asyncUUID}" ContentFontSize="13"/>
+                <TextBlock Title="Locale" Content="{locale}"/>
+                <TextBlock Title="Cores"  Content="{cores}"/>
+                <TextBlock Title="Retina" Content="{isRetina}" />
+                <TextBlock Title="Battery Status" Content="{batterystatus}" />
+                <TextBlock Title="Battery" Content="{battery}" Last="true"/>
+            </StackPanel>
+        </ScrollView>
     </DockPanel>
 </App>

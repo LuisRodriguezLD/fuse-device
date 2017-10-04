@@ -49,6 +49,8 @@ public sealed class Device : NativeModule {
         AddMember(new NativeProperty< double, object >("displayScale", PixelsPerPoint));
         AddMember(new NativeProperty< bool,   object >("isRetina", IsRetina));
         AddMember(new NativeProperty< string, object >("UUID", UUID));
+        AddMember(new NativeProperty< string, object >("batteryStatus", batteryStatus));
+        AddMember(new NativeProperty< string, object >("battery", battery));
 
         // [language]-[region]-[variants] (e.g. zh-EN-Hans, en-US, etc.)
         AddMember(new NativeProperty< string, object >("locale", GetCurrentLocale));
@@ -273,6 +275,14 @@ public sealed class Device : NativeModule {
         return bcp47Tag.toString();
     @}
 
+    public static string batteryStatus() {
+        return GetBatteryStatus();
+    }
+
+    public static string battery() {
+        return GetBattery();
+    }
+
     [Foreign(Language.ObjC)]
     private static extern(iOS) string GetCurrentLocale()
     @{
@@ -351,6 +361,35 @@ public sealed class Device : NativeModule {
         return (int32_t)ncpu;
     @}
 
+    [Foreign(Language.ObjC)]
+    private static extern(iOS) string GetBatteryStatus()
+    @{
+        UIDevice *myDevice = [UIDevice currentDevice];
+        [myDevice setBatteryMonitoringEnabled:YES];
+        int state = [myDevice batteryState]
+        if (state == 0) {
+            return (@"Unknown");
+        } else if ( state == 1) {
+            return (@"Unplugged");
+        } else if ( state == 2){
+            return (@"Charging");
+        } else if ( state == 3){
+            return (@"Charged");
+        } else {
+            return (@"Error");
+        }
+    @}
+
+    [Foreign(Language.ObjC)]
+    private static extern(iOS) string GetBattery()
+    @{
+        UIDevice *myDevice = [UIDevice currentDevice];
+        [myDevice setBatteryMonitoringEnabled:YES];
+
+        double batLeft = [myDevice batteryLevel];
+        return [NSString stringWithFormat:@"%.2f", batLeft];
+    @}
+
     // Android's foreign implementations
 
     [Foreign(Language.Java)]
@@ -416,6 +455,25 @@ public sealed class Device : NativeModule {
         return cores;
     @}
 
+    [Foreign(Language.Java)]
+    private static extern(Android) int GetBatteryStatus()
+    @{
+        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                             status == BatteryManager.BATTERY_STATUS_FULL;
+        return status;
+    @}
+
+    [Foreign(Language.Java)]
+    private static extern(Android) int GetBattery()
+    @{
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+
+        float batteryPct = level / (float)scale;
+        return batteryPct;
+    @}
+
 
     // Preview's implementations
 
@@ -466,5 +524,13 @@ public sealed class Device : NativeModule {
 
     private static extern(!Mobile) uint GetNumProcessorCores() {
         return 1;
+    }
+
+    private static extern(!Mobile) uint GetBatteryStatus() {
+        return "";
+    }
+
+    private static extern(!Mobile) uint GetBattery() {
+        return "";
     }
 }
